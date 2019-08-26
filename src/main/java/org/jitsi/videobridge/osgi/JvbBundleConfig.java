@@ -21,7 +21,6 @@ import org.ice4j.ice.harvest.*;
 import org.jitsi.impl.neomedia.device.*;
 import org.jitsi.impl.neomedia.rtp.remotebitrateestimator.*;
 import org.jitsi.impl.neomedia.transform.csrc.*;
-import org.jitsi.impl.neomedia.transform.srtp.*;
 import org.jitsi.meet.*;
 import org.jitsi.stats.media.*;
 import org.jitsi.videobridge.xmpp.*;
@@ -116,7 +115,6 @@ public class JvbBundleConfig
                 SsrcTransformEngine
                     .DROP_MUTED_AUDIO_SOURCE_IN_REVERSE_TRANSFORM,
                 true_);
-        defaults.put(SRTPCryptoContext.CHECK_REPLAY_PNAME, false_);
 
         // Sends "consent freshness" check every 3 seconds
         defaults.put(
