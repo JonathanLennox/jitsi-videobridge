@@ -153,7 +153,7 @@ public class VP8AdaptiveTrackProjectionTest
                 payloadType,
                 initialState, logger);
 
-        int latestSeq = ((Vp8Packet)buffer.get(0).getPacket()).getSequenceNumber();
+        int latestSeq = buffer.get(0).<Vp8Packet>packetAs().getSequenceNumber();
 
         TreeMap<Integer, ProjectedPacket> projectedPackets = new TreeMap<>();
 
