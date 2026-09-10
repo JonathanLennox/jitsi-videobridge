@@ -84,6 +84,10 @@ class KeyframeRequester @JvmOverloads constructor(
     // Number of calls to requestKeyframe ignored due to throttling
     private var numApiRequestsDropped: Int = 0
 
+    // Number of requests dropped by each limiter, to show which one is binding.
+    private var numRequestsDroppedPerReceiverLimit: Int = 0
+    private var numRequestsDroppedSourceWideLimit: Int = 0
+
     override fun transform(packetInfo: PacketInfo): PacketInfo? {
         val pliOrFirPacket = packetInfo.getPliOrFirPacket() ?: return packetInfo
 
@@ -131,21 +135,23 @@ class KeyframeRequester @JvmOverloads constructor(
         if (!streamInformationStore.supportsPli && !streamInformationStore.supportsFir) {
             return false
         }
-        if (requesterID == null) {
-            /* This request is either triggered by a dominant speaker switch, or possibly came over a proxy connection.
-             *  Always allow it. */
-            return true
-        }
         synchronized(keyframeLimiterSyncRoot) {
-            val perReceiverLimiter = perReceiverKeyframeLimiter.computeIfAbsent(requesterID) { mutableMapOf() }
-                .computeIfAbsent(mediaSsrc) {
-                    RateLimit(
-                        defaultMinInterval = minInterval,
-                        maxRequests = maxRequests,
-                        interval = maxRequestInterval
-                    )
-                }
-            if (!perReceiverLimiter.accept(now, waitInterval)) {
+            /* A null requesterID is a dominant speaker switch, or a request relayed from another bridge (relayed
+             * RTCP carries no endpoint id). There is no receiver to attribute it to, so skip only the per-receiver
+             * limit; the source-wide limit still applies, since it is what protects the sender's encoder and this
+             * is the only bridge that sees every requester for the source. */
+            val perReceiverLimiter = requesterID?.let { requester ->
+                perReceiverKeyframeLimiter.computeIfAbsent(requester) { mutableMapOf() }
+                    .computeIfAbsent(mediaSsrc) {
+                        RateLimit(
+                            defaultMinInterval = minInterval,
+                            maxRequests = maxRequests,
+                            interval = maxRequestInterval
+                        )
+                    }
+            }
+            if (perReceiverLimiter != null && !perReceiverLimiter.wouldAccept(now, waitInterval)) {
+                numRequestsDroppedPerReceiverLimit++
                 logger.cdebug {
                     "Ignoring keyframe request for $mediaSsrc from $requesterID, per-receiver rate limited"
                 }
@@ -159,16 +165,30 @@ class KeyframeRequester @JvmOverloads constructor(
                     interval = sourceWideMaxRequestInterval
                 )
             }
-
-            if (!perSourceLimiter.accept(now, waitInterval)) {
+            if (!perSourceLimiter.wouldAccept(now, sourceWideInterval())) {
+                numRequestsDroppedSourceWideLimit++
                 logger.cdebug { "Ignoring keyframe request for $mediaSsrc from $requesterID, per-source rate limited" }
                 return false
             }
+
+            /* Both limits accept, so record the request with both only now. A receiver waiting for a keyframe
+             * re-requests on every packet, so if requests dropped by the source-wide limit counted against its
+             * per-receiver limit it would exhaust that limit while the source-wide one is closed, and then be unable
+             * to request again for max-request-interval after the source-wide limit reopens. */
+            perReceiverLimiter?.record(now)
+            perSourceLimiter.record(now)
 
             logger.cdebug { "Keyframe requester requesting keyframe for $mediaSsrc, requested by $requesterID" }
             return true
         }
     }
+
+    /**
+     * The minimum interval to enforce between keyframe requests for a source, from any receiver. [waitInterval] is
+     * derived from the per-receiver min-interval and the RTT, so it is never longer than the per-receiver interval;
+     * take the larger of the two so that source-wide-min-interval is actually enforced.
+     */
+    private fun sourceWideInterval(): Duration = maxOf(waitInterval, sourceWideMinInterval)
 
     fun requestKeyframe(requesterID: String?, mediaSsrc: Long? = null) {
         val ssrc = mediaSsrc ?: streamInformationStore.primaryMediaSsrcs.firstOrNull() ?: run {
@@ -230,6 +250,8 @@ class KeyframeRequester @JvmOverloads constructor(
             addNumber("num_plis_dropped", numPlisDropped)
             addNumber("num_plis_generated", numPlisGenerated)
             addNumber("num_plis_forwarded", numPlisForwarded)
+            addNumber("num_requests_dropped_per_receiver_limit", numRequestsDroppedPerReceiverLimit)
+            addNumber("num_requests_dropped_source_wide_limit", numRequestsDroppedSourceWideLimit)
         }
     }
 
@@ -242,6 +264,8 @@ class KeyframeRequester @JvmOverloads constructor(
         put("num_plis_dropped", numPlisDropped)
         put("num_plis_generated", numPlisGenerated)
         put("num_plis_forwarded", numPlisForwarded)
+        put("num_requests_dropped_per_receiver_limit", numRequestsDroppedPerReceiverLimit)
+        put("num_requests_dropped_source_wide_limit", numRequestsDroppedSourceWideLimit)
     }
 
     fun onRttUpdate(newRtt: Double) {

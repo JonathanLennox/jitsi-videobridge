@@ -120,8 +120,8 @@ class KeyframeRequesterTest : ShouldSpec() {
                             }
                         }
                     }
-                    context("after the wait interval has expired") {
-                        clock.elapse(1.secs)
+                    context("after the wait and source-wide intervals have expired") {
+                        clock.elapse(3.secs)
                         keyframeRequester.requestKeyframe("ep1", 123L)
                         should("result in a sent PLI request") {
                             sentKeyframeRequests shouldHaveSize 1
@@ -148,6 +148,68 @@ class KeyframeRequesterTest : ShouldSpec() {
                 keyframeRequester.requestKeyframe("ep1", 123L)
                 should("not send anything") {
                     sentKeyframeRequests.shouldBeEmpty()
+                }
+            }
+        }
+
+        context("requesting a keyframe with no requester id") {
+            context("repeatedly") {
+                repeat(4) { keyframeRequester.requestKeyframe(null, 123L) }
+                should("still be limited by the source-wide limit") {
+                    sentKeyframeRequests shouldHaveSize 1
+                }
+            }
+            context("from more than one requester for the same source") {
+                keyframeRequester.requestKeyframe("ep1", 123L)
+                keyframeRequester.requestKeyframe(null, 123L)
+                should("share the source-wide limit with attributed requests") {
+                    sentKeyframeRequests shouldHaveSize 1
+                }
+            }
+            context("after the source-wide interval has expired") {
+                keyframeRequester.requestKeyframe(null, 123L)
+                clock.elapse(3.secs)
+                keyframeRequester.requestKeyframe(null, 123L)
+                should("be allowed again") {
+                    sentKeyframeRequests shouldHaveSize 2
+                }
+            }
+        }
+
+        context("requests dropped by the source-wide limit") {
+            // ep1 opens the source-wide limit's 2s min-interval. ep2 arrives just after and, like a receiver waiting
+            // for a keyframe, keeps re-requesting as often as its own 200ms min-interval allows, using up its 3
+            // requests per 10s long before the source-wide limit reopens.
+            keyframeRequester.requestKeyframe("ep1", 123L)
+            repeat(3) {
+                keyframeRequester.requestKeyframe("ep2", 123L)
+                clock.elapse(200.ms)
+            }
+            should("not have been sent") {
+                sentKeyframeRequests shouldHaveSize 1
+            }
+            context("and the source-wide limit reopens") {
+                clock.elapse(2.secs)
+                keyframeRequester.requestKeyframe("ep2", 123L)
+                should("not count against the requester's per-receiver limit") {
+                    sentKeyframeRequests shouldHaveSize 2
+                }
+            }
+        }
+
+        context("requests dropped by the per-receiver limit") {
+            keyframeRequester.requestKeyframe("ep1", 123L)
+            // Within ep1's 200ms per-receiver min-interval, so dropped there, before the source-wide limit.
+            clock.elapse(100.ms)
+            keyframeRequester.requestKeyframe("ep1", 123L)
+            should("not have been sent") {
+                sentKeyframeRequests shouldHaveSize 1
+            }
+            context("when another receiver requests once the source-wide interval has expired") {
+                clock.elapse(3.secs)
+                keyframeRequester.requestKeyframe("ep2", 123L)
+                should("not have counted against the source-wide limit") {
+                    sentKeyframeRequests shouldHaveSize 2
                 }
             }
         }
