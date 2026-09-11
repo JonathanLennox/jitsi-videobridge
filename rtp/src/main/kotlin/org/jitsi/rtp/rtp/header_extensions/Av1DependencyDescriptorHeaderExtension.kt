@@ -202,7 +202,7 @@ class Av1DependencyDescriptorHeaderExtension(
         writer.writeBit(customChainsFlag)
 
         if (templateDependencyStructurePresent) {
-            newTemplateDependencyStructure!!.write(writer)
+            newTemplateDependencyStructure.write(writer)
         }
 
         if (activeDecodeTargetsPresent) {

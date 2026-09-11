@@ -1499,7 +1499,7 @@ class BitrateControllerWrapper(initialEndpoints: List<MediaSourceContainer>, val
         set(value) {
             logger.debug("Setting bwe=$value")
             field = value
-            bc.bandwidthChanged(value.bps.toLong())
+            bc.bandwidthChanged(value.bps)
         }
 
     // Save the output.
@@ -1543,7 +1543,7 @@ class BitrateControllerWrapper(initialEndpoints: List<MediaSourceContainer>, val
         DiagnosticContext(),
         logger,
         clock
-    ).apply { bandwidthChanged(bwe.bps.toLong()) } // TODO: handle the -1 bps case better
+    ).apply { bandwidthChanged(bwe.bps) } // TODO: handle the -1 bps case better
 
     fun setEndpointOrdering(vararg endpoints: TestEndpoint) {
         logger.info("Set endpoints ${endpoints.map{ it.id }.joinToString(",")}")

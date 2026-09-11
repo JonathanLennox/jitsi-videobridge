@@ -143,7 +143,7 @@ abstract class SrtpTransformer(
 ) : AbstractSrtpTransformer<SrtpCryptoContext>(contextFactory, logger) {
 
     override fun deriveContext(ssrc: Long, index: Long): SrtpCryptoContext? =
-        contextFactory.deriveContext(ssrc.toInt(), 0) ?: null
+        contextFactory.deriveContext(ssrc.toInt(), 0)
 
     override fun getSsrcAndIndex(packetInfo: PacketInfo): SsrcAndIndex? {
         val rtpPacket: RtpPacket = packetInfo.packet as? RtpPacket ?: run {
@@ -163,7 +163,7 @@ abstract class SrtcpTransformer(
 ) : AbstractSrtpTransformer<SrtcpCryptoContext>(contextFactory, logger) {
 
     override fun deriveContext(ssrc: Long, index: Long): SrtcpCryptoContext? =
-        contextFactory.deriveControlContext(ssrc.toInt()) ?: null
+        contextFactory.deriveControlContext(ssrc.toInt())
 
     override fun getSsrcAndIndex(packetInfo: PacketInfo): SsrcAndIndex? {
         // Contrary to RTP packets, RTCP packets do not get parsed before they are

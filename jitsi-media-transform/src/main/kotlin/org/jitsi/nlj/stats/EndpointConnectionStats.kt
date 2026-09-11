@@ -73,7 +73,7 @@ class EndpointConnectionStats(
         Collections.synchronizedMap(LRUCache(MAX_SR_TIMESTAMP_HISTORY))
     private val logger = createChildLogger(parentLogger)
 
-    private val lock = Object()
+    private val lock = Any()
 
     /**
      * The calculated RTT, in milliseconds, between the bridge and the endpoint

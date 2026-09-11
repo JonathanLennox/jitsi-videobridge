@@ -559,8 +559,6 @@ class ProbeController(
                     min(maxProbeBitrate, estimatedBitrate * config.lossLimitedProbeScale)
             BandwidthLimitedCause.kDelayBasedLimited ->
                 Unit
-            else ->
-                Unit
         }
 
         /* Skipping use of networkEstimate */

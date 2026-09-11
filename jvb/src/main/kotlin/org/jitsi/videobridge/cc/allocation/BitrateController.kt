@@ -229,8 +229,8 @@ class BitrateController<T : MediaSourceContainer> @JvmOverloads constructor(
         activeSsrcs.removeIf { it < 0 }
 
         return BitrateControllerStatusSnapshot(
-            currentTargetBps = totalTargetBitrate.bps.toLong(),
-            currentIdealBps = totalIdealBitrate.bps.toLong(),
+            currentTargetBps = totalTargetBitrate.bps,
+            currentIdealBps = totalIdealBitrate.bps,
             activeSsrcs = activeSsrcs,
             hasNonIdealLayer = hasNonIdealLayer
         )

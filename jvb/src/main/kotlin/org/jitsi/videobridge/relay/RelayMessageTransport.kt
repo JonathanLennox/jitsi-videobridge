@@ -155,10 +155,7 @@ class RelayMessageTransport(
      * @return
      */
     override fun addReceiver(message: AddReceiverMessage): BridgeChannelMessage? {
-        val sourceName = message.sourceName ?: run {
-            logger.error("Received AddReceiverMessage for with sourceName = null")
-            return null
-        }
+        val sourceName = message.sourceName
         val ep = relay.conference.findSourceOwner(sourceName) ?: run {
             logger.warn("Received AddReceiverMessage for unknown or non-local: $sourceName")
             return null

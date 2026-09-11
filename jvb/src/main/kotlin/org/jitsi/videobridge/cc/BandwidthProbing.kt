@@ -62,7 +62,7 @@ class BandwidthProbing(
     var diagnosticsContext: DiagnosticContext? = null
 
     override fun bandwidthEstimationChanged(newValue: Bandwidth) {
-        latestBwe = newValue.bps.toLong()
+        latestBwe = newValue.bps
     }
 
     override fun run() {

@@ -260,11 +260,11 @@ object VideobridgePeriodicMetrics {
                 val incomingPacketStreamStats = rtpReceiverStats.packetStreamStats
                 bitrateDownloadBps += incomingPacketStreamStats.getBitrateBps()
                 packetRateDownload += incomingPacketStreamStats.packetRate
-                conferenceBitrate = (conferenceBitrate + incomingPacketStreamStats.getBitrateBps()).toLong()
+                conferenceBitrate = conferenceBitrate + incomingPacketStreamStats.getBitrateBps()
                 conferencePacketRate += incomingPacketStreamStats.packetRate
                 bitrateUploadBps += outgoingStats.getBitrateBps()
                 packetRateUpload += outgoingStats.packetRate
-                conferenceBitrate = (conferenceBitrate + outgoingStats.getBitrateBps()).toLong()
+                conferenceBitrate = conferenceBitrate + outgoingStats.getBitrateBps()
                 conferencePacketRate += outgoingStats.packetRate
                 val endpointRtt = endpointConnectionStats.rtt
                 if (endpointRtt > 0) {
@@ -290,11 +290,11 @@ object VideobridgePeriodicMetrics {
             for (relay in conference.relays) {
                 relayBitrateIncomingBps += relay.incomingBitrateBps
                 relayPacketRateIncoming += relay.incomingPacketRate
-                conferenceBitrate = (conferenceBitrate + relay.incomingBitrateBps).toLong()
+                conferenceBitrate = conferenceBitrate + relay.incomingBitrateBps
                 conferencePacketRate += relay.incomingPacketRate
                 relayBitrateOutgoingBps += relay.outgoingBitrateBps
                 relayPacketRateOutgoing += relay.outgoingPacketRate
-                conferenceBitrate = (conferenceBitrate + relay.outgoingBitrateBps).toLong()
+                conferenceBitrate = conferenceBitrate + relay.outgoingBitrateBps
                 conferencePacketRate += relay.outgoingPacketRate
 
                 /* TODO: report Relay RTT and loss, like we do for Endpoints? */
