@@ -24,13 +24,13 @@
 
     <properties>
         <jetty.version>12.0.35</jetty.version>
-        <kotlin.version>2.2.20</kotlin.version>
+        <kotlin.version>2.4.20</kotlin.version>
         <kotest.version>5.9.1</kotest.version>
-        <junit.version>5.13.4</junit.version>
-        <junit.platform.version>1.13.4</junit.platform.version>
+        <junit.version>5.14.4</junit.version>
+        <junit.platform.version>1.14.4</junit.platform.version>
         <jitsi.utils.version>1.0-151-g174c4a1</jitsi.utils.version>
         <jicoco.version>1.1-178-ga09ed33</jicoco.version>
-        <mockk.version>1.14.5</mockk.version>
+        <mockk.version>1.14.11</mockk.version>
         <ktlint-maven-plugin.version>3.2.0</ktlint-maven-plugin.version>
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
@@ -39,7 +39,7 @@
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <spotbugs.version>4.9.4</spotbugs.version>
         <spotbugs-maven-plugin.version>4.9.4.2</spotbugs-maven-plugin.version>
-        <jackson.version>2.19.4</jackson.version>
+        <jackson.version>2.21.5</jackson.version>
         <jacoco.version>0.8.13</jacoco.version>
         <bouncycastle.version>1.83</bouncycastle.version>
         <jersey.version>3.1.11</jersey.version>

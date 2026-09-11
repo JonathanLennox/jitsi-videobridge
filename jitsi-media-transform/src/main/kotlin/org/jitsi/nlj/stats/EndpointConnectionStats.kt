@@ -127,7 +127,7 @@ class EndpointConnectionStats(
         }
     }
 
-    private fun processReportBlock(receivedTime: Instant?, reportBlock: RtcpReportBlock) = synchronized(lock) {
+    private fun processReportBlock(receivedTime: Instant?, reportBlock: RtcpReportBlock): Unit = synchronized(lock) {
         if (reportBlock.lastSrTimestamp == 0L && reportBlock.delaySinceLastSr == 0L) {
             logger.cdebug {
                 "Report block for ssrc ${reportBlock.ssrc} didn't have SR data: " +
