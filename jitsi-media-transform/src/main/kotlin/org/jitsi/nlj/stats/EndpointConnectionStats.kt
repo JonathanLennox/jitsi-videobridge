@@ -73,7 +73,7 @@ class EndpointConnectionStats(
         Collections.synchronizedMap(LRUCache(MAX_SR_TIMESTAMP_HISTORY))
     private val logger = createChildLogger(parentLogger)
 
-    private val lock = Object()
+    private val lock = Any()
 
     /**
      * The calculated RTT, in milliseconds, between the bridge and the endpoint
@@ -127,7 +127,7 @@ class EndpointConnectionStats(
         }
     }
 
-    private fun processReportBlock(receivedTime: Instant?, reportBlock: RtcpReportBlock) = synchronized(lock) {
+    private fun processReportBlock(receivedTime: Instant?, reportBlock: RtcpReportBlock): Unit = synchronized(lock) {
         if (reportBlock.lastSrTimestamp == 0L && reportBlock.delaySinceLastSr == 0L) {
             logger.cdebug {
                 "Report block for ssrc ${reportBlock.ssrc} didn't have SR data: " +

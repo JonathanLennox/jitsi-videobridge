@@ -170,7 +170,7 @@ class ProbingDataSender(
             val paddingSize = (remainingBytes - RtpHeader.FIXED_HEADER_SIZE_BYTES).coerceAtMost(0xFF)
             val packetLength = RtpHeader.FIXED_HEADER_SIZE_BYTES + paddingSize
 
-            val paddingPacket = PaddingVideoPacket.create(packetLength.toInt())
+            val paddingPacket = PaddingVideoPacket.create(packetLength)
             paddingPacket.payloadType = pt.pt.toPositiveInt()
             paddingPacket.ssrc = senderSsrc
             paddingPacket.timestamp = currDummyTimestamp

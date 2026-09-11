@@ -139,7 +139,7 @@ class RemoteBandwidthEstimator(
         numRembsCreated++
         return RtcpFbRembPacketBuilder(
             rtcpHeader = RtcpHeaderBuilder(senderSsrc = localSsrc),
-            brBps = currentBw.bps.toLong(),
+            brBps = currentBw.bps,
             ssrcs = ssrcs.toList()
         ).build()
     }

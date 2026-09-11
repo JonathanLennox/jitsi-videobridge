@@ -88,7 +88,7 @@ class RemoteBandwidthEstimatorTest : ShouldSpec() {
             sendPackets(targetBitrate)
             context("when receiving a higher bitrate, the estimate should grow") {
                 val rembPacket2 = remoteBandwidthEstimator.createRemb()
-                rembPacket2!!.bitrate shouldBeGreaterThan targetBitrate.bps.toLong()
+                rembPacket2!!.bitrate shouldBeGreaterThan targetBitrate.bps
             }
         }
     }

@@ -337,9 +337,7 @@ class GoogCcNetworkController(
             if (!feedbackMaxRtts.isEmpty()) {
                 val sumRttMs = feedbackMaxRtts.sum()
                 val meanRttMs = sumRttMs / feedbackMaxRtts.size
-                if (delayBasedBwe != null) {
-                    delayBasedBwe.onRttUpdate(meanRttMs.ms)
-                }
+                delayBasedBwe.onRttUpdate(meanRttMs.ms)
             }
 
             var feedbackMinRtt = MAX_DURATION
@@ -636,7 +634,7 @@ class GoogCcNetworkController(
                 put("loss_ratio", lossRatio)
                 put("send_side_target", sendSideTarget.bps)
                 put("last_loss_based_state", lossBasedState.name)
-                put("data_window", dataWindow?.bytes?.toDouble() ?: Double.NaN)
+                put("data_window", dataWindow?.bytes ?: Double.NaN)
                 put("pushback_target", pushbackTarget.bps)
                 put("in_alr", inAlr)
             }

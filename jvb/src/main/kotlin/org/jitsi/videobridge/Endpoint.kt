@@ -1285,7 +1285,7 @@ class Endpoint @JvmOverloads constructor(
         override fun bandwidthEstimationChanged(newValue: Bandwidth) {
             logger.cdebug { "Estimated bandwidth is now $newValue" }
             latestBandwidth = newValue
-            bitrateController.bandwidthChanged(newValue.bps.toLong())
+            bitrateController.bandwidthChanged(newValue.bps)
             bandwidthProbing.bandwidthEstimationChanged(newValue)
         }
     }

@@ -61,7 +61,7 @@ class GoogleCcEstimator(diagnosticContext: DiagnosticContext, parentLogger: Logg
      * Implements the loss-based part of Google CC.
      */
     private val sendSideBandwidthEstimation =
-        SendSideBandwidthEstimation(diagnosticContext, initBw.bps.toLong(), logger).also {
+        SendSideBandwidthEstimation(diagnosticContext, initBw.bps, logger).also {
             it.setMinMaxBitrate(minBw.bps.toInt(), maxBw.bps.toInt())
         }
 

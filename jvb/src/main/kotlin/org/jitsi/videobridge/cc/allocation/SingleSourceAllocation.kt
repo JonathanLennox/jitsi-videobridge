@@ -230,7 +230,7 @@ internal class SingleSourceAllocation(
      * Gets the target bitrate (in bps) for this endpoint allocation, i.e. the bitrate of the currently chosen layer.
      */
     val targetBitrate: Long
-        get() = targetLayer?.bitrate?.toLong() ?: 0
+        get() = targetLayer?.bitrate ?: 0
 
     private val targetLayer: LayerSnapshot?
         get() = layers.getOrNull(targetIdx)
@@ -240,7 +240,7 @@ internal class SingleSourceAllocation(
      * forward if there were no (bandwidth) constraints.
      */
     val idealBitrate: Long
-        get() = layers.idealLayer?.bitrate?.toLong() ?: 0
+        get() = layers.idealLayer?.bitrate ?: 0
 
     /**
      * Exposed for testing only.
